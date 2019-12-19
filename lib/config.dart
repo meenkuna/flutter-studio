@@ -2,10 +2,10 @@
 
 class Config {
 
-  // โดเมนเว็บหลัก หรือ โดเมนเว็บรองของเรา
-  static String Domain = 'ifelse.co.th';
+  // ชื่อโดเมนเว็บหลัก หรือ โดเมนเว็บรองของเรา
+  static final String domain = 'ifelse.co.th';
 
-  // Key ที่ได้จากระบบ Admin ของเว็บ -> ตั้งค่า -> แอพมือถือ
-  static String ApiKey = 'aaa';
+  // Key ที่ได้จากระบบ Admin ของเว็บ -> แอพมือถือ
+  static String apiKey = 'aaa';
 
 }

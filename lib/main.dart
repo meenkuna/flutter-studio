@@ -6,7 +6,7 @@ import 'config.dart';
 import 'const.dart';
 import 'icon.dart';
 import 'page.dart';
-import 'type/last.dart';
+import 'tab.dart';
 
 void main() {
   //setTargetPlatformForDesktop();
@@ -32,7 +32,7 @@ class SplashScreenState extends State<SplashScreen> {
     var client = new http.Client();
     try {
       var response = await client.get(
-        'https://' + Config.Domain + '/api/feed/v1/' + Config.ApiKey + '/load',
+        'https://' + Config.domain + '/api/feed/v1/' + Config.apiKey + '/load',
         headers: {'user-agent': 'app:studio.ifelse'}
       );
       var load = json.decode(response.body);

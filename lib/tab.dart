@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:studio.ifelse/const.dart';
-import 'package:studio.ifelse/config.dart';
 import 'package:flutter/cupertino.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'dart:async';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:studio.ifelse/config.dart';
 
 class PageLast extends StatelessWidget {
   PageLast({this.icon,this.name,this.type,this.cate,this.order,this.article});
@@ -55,10 +54,9 @@ class MyHomePageState extends State<MyPageLast> {
     var client = new http.Client();
     try {
       var response = await client.get(
-        'https://' + Config.Domain + '/api/feed/v1/' + Config.ApiKey + '/' + widget.type,
+        'https://' + Config.domain + '/api/feed/v1/' + Config.apiKey + '/' + widget.type,
         headers: {'user-agent': 'app:studio.ifelse'}
       );
-      //print('https://' + Config.Domain + '/api/feed/v1/' + Config.ApiKey + '/' + type);
       var load = json.decode(response.body);
       List<News> _news = <News>[];
       load.forEach((b) {
@@ -74,16 +72,14 @@ class MyHomePageState extends State<MyPageLast> {
       client.close();
     }
   }
-
   
   Future<Timer> getMore() async {    
     var client = new http.Client();
     try {
       var response = await client.get(
-        'https://' + Config.Domain + '/api/feed/v1/' + Config.ApiKey + '/last',
+        'https://' + Config.domain + '/api/feed/v1/' + Config.apiKey + '/last',
         headers: {'user-agent': 'app:studio.ifelse'}
       );
-      //print('https://' + Config.Domain + '/api/feed/v1/' + Config.ApiKey + '/' + type);
       var load = json.decode(response.body);
       List<News> _news = <News>[];
       load.forEach((b) {
@@ -94,8 +90,6 @@ class MyHomePageState extends State<MyPageLast> {
         _news.add(News(id, title, image, link));
       });
       setState(() => news = _news);
-      //print(news);
-
       _refreshController.loadComplete();
       print(widget.type);
     } finally {
@@ -107,8 +101,7 @@ class MyHomePageState extends State<MyPageLast> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        
+      body: Container(        
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -158,8 +151,6 @@ class MyHomePageState extends State<MyPageLast> {
     );
   }
 
-
-  
   _buildListItem(News news, BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
@@ -221,3 +212,11 @@ class MyHomePageState extends State<MyPageLast> {
   }
 }
 
+class News {
+  int id;
+  String title;
+  String image;
+  String link;
+  News(this.id, this.title, this.image, this.link);
+  News.empty();
+}
