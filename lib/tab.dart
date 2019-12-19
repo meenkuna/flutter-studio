@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:studio.ifelse/config.dart';
+import 'package:studio.ifelse/const.dart';
+import 'package:studio.ifelse/icon.dart';
 
 class PageLast extends StatelessWidget {
   PageLast({this.icon,this.name,this.type,this.cate,this.order,this.article});
@@ -18,7 +20,7 @@ class PageLast extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
+      backgroundColor: Colors.transparent,
       body: MyPageLast(icon: icon, name:name, type:type, cate: cate, order:order, article:article),
     );
   }
@@ -39,13 +41,26 @@ class MyPageLast extends StatefulWidget {
   }
 }
 
-class MyHomePageState extends State<MyPageLast> {
+class MyHomePageState extends State<MyPageLast> with AutomaticKeepAliveClientMixin {
   List<News> news = <News>[];
+  String apiUrl;
+  
+  @override
+  bool get wantKeepAlive => true;
   
   @override
   void initState() {
     super.initState();
-    getNews();
+    apiUrl = 'https://' + Config.domain + '/api/feed/v1/' + Config.apiKey + '/' + widget.type;
+    if(widget.type == 'acate') {
+      apiUrl += '/' + widget.cate + '/' + widget.order;
+    } else if(widget.type == 'article') {
+      apiUrl += '/' + widget.article;
+    }
+    print(apiUrl);
+    if(news == null || news.length == 0) {
+      getNews();
+    }
   }
 
   RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -53,10 +68,7 @@ class MyHomePageState extends State<MyPageLast> {
   Future getNews() async {    
     var client = new http.Client();
     try {
-      var response = await client.get(
-        'https://' + Config.domain + '/api/feed/v1/' + Config.apiKey + '/' + widget.type,
-        headers: {'user-agent': 'app:studio.ifelse'}
-      );
+      var response = await client.get(apiUrl, headers: {'user-agent': 'app:studio.ifelse'});
       var load = json.decode(response.body);
       List<News> _news = <News>[];
       load.forEach((b) {
@@ -64,7 +76,8 @@ class MyHomePageState extends State<MyPageLast> {
         String title = b['title'];
         String image = b['image'];
         String link = b['link'];
-        _news.add(News(id, title, image, link));
+        String added = b['added'];
+        _news.add(News(id, title, image, link, added));
       });
       setState(() => news = _news);
       _refreshController.refreshCompleted();
@@ -73,13 +86,10 @@ class MyHomePageState extends State<MyPageLast> {
     }
   }
   
-  Future<Timer> getMore() async {    
+  Future getMore() async {    
     var client = new http.Client();
     try {
-      var response = await client.get(
-        'https://' + Config.domain + '/api/feed/v1/' + Config.apiKey + '/last',
-        headers: {'user-agent': 'app:studio.ifelse'}
-      );
+      var response = await client.get(apiUrl, headers: {'user-agent': 'app:studio.ifelse'});
       var load = json.decode(response.body);
       List<News> _news = <News>[];
       load.forEach((b) {
@@ -87,7 +97,8 @@ class MyHomePageState extends State<MyPageLast> {
         String title = b['title'];
         String image = b['image'];
         String link = b['link'];
-        _news.add(News(id, title, image, link));
+        String added = b['added'];
+        _news.add(News(id, title, image, link, added));
       });
       setState(() => news = _news);
       _refreshController.loadComplete();
@@ -95,13 +106,15 @@ class MyHomePageState extends State<MyPageLast> {
     } finally {
       client.close();
     }
-    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(        
+      backgroundColor: Colors.transparent,
+      body: Container(
+        color: Colors.transparent,
+        /*  
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -109,6 +122,7 @@ class MyHomePageState extends State<MyPageLast> {
             colors: [Color(0xFFFFFFFF),Color(0xFFF0F0F0),]
           )
         ), 
+        */
         child: SmartRefresher(        
           enablePullDown: true,
           enablePullUp: true,
@@ -152,62 +166,134 @@ class MyHomePageState extends State<MyPageLast> {
   }
 
   _buildListItem(News news, BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: Color(0x88CCCCCC), width: 0.5),
-        borderRadius: BorderRadius.circular(10.0),
-      ),
+    
+    BorderRadius radius = BorderRadius.only(
+          topLeft: Radius.circular(10.0),
+          topRight: Radius.circular(10.0),
+          bottomLeft: Radius.circular(10.0),
+          bottomRight: Radius.circular(10.0)
+    );
 
-      child: Container(
-        padding: EdgeInsets.only(top: 10),
-        child: Column(
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(top: 5, left: 15, bottom: 5, right: 5),
-              child: Text(
-                  news.title == null || news.title.isEmpty ? "NA" : news.title,
-                  style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20, fontFamily: "Kanit"))),
-            Container(
-              margin: EdgeInsets.only(bottom: 0, top: 0),
-              decoration: BoxDecoration(color: Colors.grey),
-              child: news.image == null || news.image.isEmpty
-                  ? SizedBox(
-                      height: 10,
-                    )
-                  : Image.network(news.image, fit: BoxFit.fitWidth),
-            ),
-            /*
-            Divider(
-              height: 0,
-              color: Colors.grey,
-            ),
-            */
-            Row(
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.remove_red_eye),
-                  tooltip: "View",
-                  onPressed: () async {
-                   
-                  },
+    BoxDecoration card;   
+    if(Site.cardBg == 2) {
+      AlignmentGeometry begin = Alignment.centerLeft;
+      AlignmentGeometry end = Alignment.centerRight;
+      if(Site.cardRange == 2) {
+        begin = Alignment.topCenter;
+        end = Alignment.bottomCenter;
+      } else if(Site.cardRange == 3) {
+        begin = Alignment.topLeft;
+        end = Alignment.bottomRight;
+      } else if(Site.cardRange == 4) {
+        begin = Alignment.bottomLeft;
+        end = Alignment.topRight;
+      }
+      card = BoxDecoration(
+        gradient: LinearGradient(colors: [Site.cardBg1, Site.cardBg2], begin: begin, end: end),
+        borderRadius: radius,
+      );
+    } else if(Site.cardBg == 1) {
+      card = BoxDecoration(
+        color: Site.cardBg1,
+        borderRadius: radius,
+      );
+    }
+
+    Widget newsCard;
+
+    if(1 == 2) {
+      newsCard = Column(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(top: 10, left: 15, bottom: 5, right: 15),
+            child: Text(news.title == null || news.title.isEmpty ? "NA" : news.title, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20, fontFamily: "Kanit", color: Site.cardTxt))),
+          Container(
+            child: news.image == null || news.image.isEmpty ? SizedBox(height: 5,) : Image.network(news.image, fit: BoxFit.fitWidth),
+          ),
+          Row(
+            children: <Widget>[
+              IconButton(icon: Icon(Icons.remove_red_eye), tooltip: "View", color: Site.cardTxt, onPressed: () async {},),
+              IconButton(icon: Icon(Icons.share), tooltip: "Share", color: Site.cardTxt, onPressed: () {},)
+            ],
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.end,
+          )
+        ],
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      );
+    } else {
+      newsCard = Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Container( 
+                padding: EdgeInsets.only(top: 15, left:15, right:10, bottom:0),
+                alignment: Alignment.topLeft,
+                width: 140,
+                height: 85,
+                //color: Colors.cyan,
+                child: news.image == null || news.image.isEmpty ? SizedBox(height: 5,) : Image.network(news.image, fit: BoxFit.cover),
+              ),
+              Expanded( 
+                child: Container( 
+                  padding: EdgeInsets.only(top: 12, right:12, bottom:0),
+                  alignment: Alignment.topLeft,
+                  height: 85,
+                  child: Text(news.title == null || news.title.isEmpty ? "NA" : news.title, style: TextStyle(fontWeight: FontWeight.normal, height:1.4, fontSize: 18, fontFamily: "Kanit", color: Site.cardTxt)),
+                  //color: Colors.amber,
                 ),
-                IconButton(
-                  icon: Icon(Icons.share),
-                  tooltip: "Share",
-                  onPressed: () {
-                    
-                  },
-                )
-              ],
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.end,
-            )
-          ],
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-        ),
+              )
+            ],
+            crossAxisAlignment: CrossAxisAlignment.start,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: <Widget>[
+                  IconButton(icon: Icon(SIcons.icofont['clocktime']),iconSize: 12, padding: EdgeInsets.all(0), tooltip: "Add", color: Site.cardTxt, onPressed: () async {},),
+                  Text(news.added == null || news.added.isEmpty ? "" : news.added, style: TextStyle(fontWeight: FontWeight.normal, height:1.35, fontSize: 12, fontFamily: "Kanit", color: Site.cardTxt)),
+                ],
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+              ),
+              Row(
+                children: <Widget>[
+                  IconButton(icon: Icon(Icons.remove_red_eye), tooltip: "View", color: Site.cardTxt, onPressed: () async {},),
+                  IconButton(icon: Icon(Icons.share), tooltip: "Share", color: Site.cardTxt, onPressed: () {},)
+                ],
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+              )
+            ]
+          ),
+        ]
+      );
+    }
+/*
+      shape: RoundedRectangleBorder(        
+        side: BorderSide(color: Color(0x88CCCCCC), width: 0.5),
+        borderRadius: BorderRadius.circular(20.0),        
       ),
-      margin: EdgeInsets.only(top: 10, left: 10, right: 10),
+*/
+    return Card(
+      color: Colors.transparent,      
+      elevation: Site.cardShadow == 1 ? 1 : 0,
+      margin: EdgeInsets.only(top:0, left: 0, right: 0, bottom: 10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(Site.cardRD1),
+          topRight: Radius.circular(Site.cardRD2),
+          bottomLeft: Radius.circular(Site.cardRD3),
+          bottomRight: Radius.circular(Site.cardRD4)
+        )        
+      ),
+      child: Container(
+        decoration: card,
+        //padding: EdgeInsets.all(0),
+        child: newsCard,
+      )
     );
   }
 }
@@ -217,6 +303,7 @@ class News {
   String title;
   String image;
   String link;
-  News(this.id, this.title, this.image, this.link);
+  String added;
+  News(this.id, this.title, this.image, this.link, this.added);
   News.empty();
 }

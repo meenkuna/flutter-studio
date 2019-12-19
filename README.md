@@ -1,3 +1,5 @@
+<img src="assets/screenshort.png">
+
 # แอพสำเร็จรูปฟรี (Native)
 แอพพลิเคชั่นมือถือที่พัฒนาด้วย Flutter เพื่อให้รองรับการคอมไพล์เป็นแอพสำหรับ Android และ iOS ได้  
 
