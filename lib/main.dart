@@ -28,7 +28,7 @@ class SplashScreenState extends State<SplashScreen> {
     loadData();
   }
 
-  Future loadData() async {    
+  Future<Timer> loadData() async {    
     var client = new http.Client();
     try {
       var response = await client.get(
@@ -38,9 +38,6 @@ class SplashScreenState extends State<SplashScreen> {
       var load = json.decode(response.body);
       
       Site.getData(load);
-
-      //Site.pageBar = <BottomNavigationBarItem>[];
-      //Site.pageBody = <Map<String,String>>[];
       Site.pageType = <Widget>[];
       Site.pageTab = <Tab>[];
 
@@ -52,13 +49,6 @@ class SplashScreenState extends State<SplashScreen> {
         String cate = b['cate'];
         String order = b['order'];
         String article = b['article'];
-        /*
-        Site.pageBar.add(BottomNavigationBarItem(
-          icon: Icon(SIcons.icofont[icon]),
-          title: Text(name),
-        ));
-*/
-        //Site.pageBody.add({'icon':icon, 'name':name, 'type':type, 'cate':cate, 'order':order, 'article':article});
         Site.pageType.add(PageLast(icon: icon, name:name, type:type, cate: cate, order:order, article:article));
         Site.pageTab.add(
           Tab(
@@ -66,11 +56,13 @@ class SplashScreenState extends State<SplashScreen> {
             text: name.isEmpty ? null : name,
           ),
         );
-      }); 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => MyPage()));
+      });
     } finally {
       client.close();
     }
+    return new Timer(Duration(seconds: 1),() {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MyPage()));
+    });
   }
 
   @override

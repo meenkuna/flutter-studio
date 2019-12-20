@@ -44,6 +44,7 @@ class Site {
   static double bodyRD3 = 0;
   static double bodyRD4 = 0;
   
+  static String cardType = '';
   static Color cardTxt;
   static int cardBg = 0;
   static Color cardBg1;
@@ -86,10 +87,10 @@ class Site {
     Site.menuRange = getInt(load['menu']['range']);
 
     Site.bodyTxt = HexColor(load['body']['txt'], '#444444');
-    Site.bodyBg = load['body']['bg'];
+    Site.bodyBg = getInt(load['body']['bg']);
     Site.bodyBg1 = HexColor(load['body']['bg1'], '#ffffff');
     Site.bodyBg2 = HexColor(load['body']['bg2'], '#ffffff');
-    Site.bodyRange = load['body']['range'];
+    Site.bodyRange = getInt(load['body']['range']);
     Site.bodyMLeft = getDouble(load['body']['mleft']);
     Site.bodyMRight = getDouble(load['body']['mright']);
     Site.bodyMTop = getDouble(load['body']['mtop']);
@@ -103,6 +104,7 @@ class Site {
     Site.bodyRD3 = getDouble(load['body']['rd3']);
     Site.bodyRD4 = getDouble(load['body']['rd4']);
 
+    Site.cardType = load['card']['type'];
     Site.cardTxt = HexColor(load['card']['txt'], '#444444');
     Site.cardBg = getInt(load['card']['bg']);
     Site.cardBg1 = HexColor(load['card']['bg1'], '#ffffff');

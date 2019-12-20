@@ -102,7 +102,6 @@ class MyHomePageState extends State<MyPageLast> with AutomaticKeepAliveClientMix
       });
       setState(() => news = _news);
       _refreshController.loadComplete();
-      print(widget.type);
     } finally {
       client.close();
     }
@@ -132,17 +131,13 @@ class MyHomePageState extends State<MyPageLast> with AutomaticKeepAliveClientMix
               Widget body ;
               if(mode==LoadStatus.idle){
                 body =  Text("pull up load");
-              }
-              else if(mode==LoadStatus.loading){
+              } else if(mode==LoadStatus.loading){
                 body =  CupertinoActivityIndicator();
-              }
-              else if(mode == LoadStatus.failed){
+              } else if(mode == LoadStatus.failed){
                 body = Text("Load Failed!Click retry!");
-              }
-              else if(mode == LoadStatus.canLoading){
+              } else if(mode == LoadStatus.canLoading){
                   body = Text("release to load more");
-              }
-              else{
+              } else{
                 body = Text("No more Data");
               }
               return Container(
@@ -168,10 +163,10 @@ class MyHomePageState extends State<MyPageLast> with AutomaticKeepAliveClientMix
   _buildListItem(News news, BuildContext context) {
     
     BorderRadius radius = BorderRadius.only(
-          topLeft: Radius.circular(10.0),
-          topRight: Radius.circular(10.0),
-          bottomLeft: Radius.circular(10.0),
-          bottomRight: Radius.circular(10.0)
+      topLeft: Radius.circular(Site.cardRD1),
+      topRight: Radius.circular(Site.cardRD2),
+      bottomLeft: Radius.circular(Site.cardRD3),
+      bottomRight: Radius.circular(Site.cardRD4)
     );
 
     BoxDecoration card;   
@@ -200,75 +195,61 @@ class MyHomePageState extends State<MyPageLast> with AutomaticKeepAliveClientMix
     }
 
     Widget newsCard;
-
-    if(1 == 2) {
+    print(Site.cardType);
+    if(Site.cardType == 'bottom1') {
       newsCard = Column(
         children: <Widget>[
           Container(
             margin: EdgeInsets.only(top: 10, left: 15, bottom: 5, right: 15),
-            child: Text(news.title == null || news.title.isEmpty ? "NA" : news.title, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20, fontFamily: "Kanit", color: Site.cardTxt))),
+            child: Text(news.title == null || news.title.isEmpty ? "NA" : news.title, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20, fontFamily: "Kanit", color: Site.cardTxt))
+          ),
           Container(
             child: news.image == null || news.image.isEmpty ? SizedBox(height: 5,) : Image.network(news.image, fit: BoxFit.fitWidth),
           ),
-          Row(
-            children: <Widget>[
-              IconButton(icon: Icon(Icons.remove_red_eye), tooltip: "View", color: Site.cardTxt, onPressed: () async {},),
-              IconButton(icon: Icon(Icons.share), tooltip: "Share", color: Site.cardTxt, onPressed: () {},)
-            ],
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.end,
-          )
+        ],
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      );
+    } else if(Site.cardType == 'top1') {
+      newsCard = Column(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(Site.cardRD1),
+              topRight: Radius.circular(Site.cardRD2),
+            ),
+            child: news.image == null || news.image.isEmpty ? SizedBox(height: 5,) : Image.network(news.image, fit: BoxFit.fitWidth),
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 10, left: 15, bottom: 0, right: 15),
+            child: Text(news.title == null || news.title.isEmpty ? "NA" : news.title, style: TextStyle(fontWeight: FontWeight.normal, fontSize: 20, fontFamily: "Kanit", color: Site.cardTxt))
+          ),
         ],
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
       );
     } else {
-      newsCard = Column(
+      newsCard = Row(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              Container( 
-                padding: EdgeInsets.only(top: 15, left:15, right:10, bottom:0),
-                alignment: Alignment.topLeft,
-                width: 140,
-                height: 85,
-                //color: Colors.cyan,
-                child: news.image == null || news.image.isEmpty ? SizedBox(height: 5,) : Image.network(news.image, fit: BoxFit.cover),
-              ),
-              Expanded( 
-                child: Container( 
-                  padding: EdgeInsets.only(top: 12, right:12, bottom:0),
-                  alignment: Alignment.topLeft,
-                  height: 85,
-                  child: Text(news.title == null || news.title.isEmpty ? "NA" : news.title, style: TextStyle(fontWeight: FontWeight.normal, height:1.4, fontSize: 18, fontFamily: "Kanit", color: Site.cardTxt)),
-                  //color: Colors.amber,
-                ),
-              )
-            ],
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Container( 
+            padding: EdgeInsets.only(top: 15, left:15, right:10, bottom:0),
+            alignment: Alignment.topLeft,
+            width: 140,
+            height: 85,
+            //color: Colors.cyan,
+            child: news.image == null || news.image.isEmpty ? SizedBox(height: 5,) : Image.network(news.image, fit: BoxFit.cover),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: <Widget>[
-                  IconButton(icon: Icon(SIcons.icofont['clocktime']),iconSize: 12, padding: EdgeInsets.all(0), tooltip: "Add", color: Site.cardTxt, onPressed: () async {},),
-                  Text(news.added == null || news.added.isEmpty ? "" : news.added, style: TextStyle(fontWeight: FontWeight.normal, height:1.35, fontSize: 12, fontFamily: "Kanit", color: Site.cardTxt)),
-                ],
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-              ),
-              Row(
-                children: <Widget>[
-                  IconButton(icon: Icon(Icons.remove_red_eye), tooltip: "View", color: Site.cardTxt, onPressed: () async {},),
-                  IconButton(icon: Icon(Icons.share), tooltip: "Share", color: Site.cardTxt, onPressed: () {},)
-                ],
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.end,
-              )
-            ]
-          ),
-        ]
+          Expanded( 
+            child: Container( 
+              padding: EdgeInsets.only(top: 12, right:12, bottom:0),
+              alignment: Alignment.topLeft,
+              height: 85,
+              child: Text(news.title == null || news.title.isEmpty ? "NA" : news.title, style: TextStyle(fontWeight: FontWeight.normal, height:1.4, fontSize: 18, fontFamily: "Kanit", color: Site.cardTxt)),
+              //color: Colors.amber,
+            ),
+          )
+        ],
+        crossAxisAlignment: CrossAxisAlignment.start,
       );
     }
 /*
@@ -292,7 +273,32 @@ class MyHomePageState extends State<MyPageLast> with AutomaticKeepAliveClientMix
       child: Container(
         decoration: card,
         //padding: EdgeInsets.all(0),
-        child: newsCard,
+        child: Column(
+          children: <Widget>[
+            newsCard,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: <Widget>[
+                    IconButton(icon: Icon(SIcons.icofont['clocktime']),iconSize: 12, padding: EdgeInsets.all(0), tooltip: "Add", color: Site.cardTxt, onPressed: () async {},),
+                    Text(news.added == null || news.added.isEmpty ? "" : news.added, style: TextStyle(fontWeight: FontWeight.normal, height:1.35, fontSize: 12, fontFamily: "Kanit", color: Site.cardTxt)),
+                  ],
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                ),
+                Row(
+                  children: <Widget>[
+                    IconButton(icon: Icon(Icons.remove_red_eye), tooltip: "View", color: Site.cardTxt, onPressed: () async {},),
+                    IconButton(icon: Icon(Icons.share), tooltip: "Share", color: Site.cardTxt, onPressed: () {},)
+                  ],
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                )
+              ]
+            ),
+          ]
+        ),
       )
     );
   }
