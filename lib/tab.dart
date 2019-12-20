@@ -77,6 +77,9 @@ class MyHomePageState extends State<MyPageLast> with AutomaticKeepAliveClientMix
         String image = b['image'];
         String link = b['link'];
         String added = b['added'];
+        if(image == '/static/img/no-img.jpg') {
+          image = null;
+        }
         _news.add(News(id, title, image, link, added));
       });
       setState(() => news = _news);
@@ -98,6 +101,9 @@ class MyHomePageState extends State<MyPageLast> with AutomaticKeepAliveClientMix
         String image = b['image'];
         String link = b['link'];
         String added = b['added'];
+        if(image == '/static/img/no-img.jpg') {
+          image = null;
+        }
         _news.add(News(id, title, image, link, added));
       });
       setState(() => news = _news);
@@ -220,44 +226,46 @@ class MyHomePageState extends State<MyPageLast> with AutomaticKeepAliveClientMix
         crossAxisAlignment: CrossAxisAlignment.start,
       );
     } else if(Site.cardType == 'right1') {
+      double height = (news.image == null || news.image.isEmpty ? null : 85);
       newsCard = Row(
         children: <Widget>[
-          Container( 
-            padding: EdgeInsets.only(top: 15, left:15, right:10, bottom:0),
-            alignment: Alignment.topRight,
-            width: 140,
-            height: 85,
-            //color: Colors.cyan,
-            child: news.image == null || news.image.isEmpty ? SizedBox(height: 5,) : Image.network(news.image, fit: BoxFit.cover),
-          ),
           Expanded( 
             child: Container( 
-              padding: EdgeInsets.only(top: 12, right:12, bottom:0),
+              padding: EdgeInsets.only(top: 12, left:15, right:0),
               alignment: Alignment.topRight,
-              height: 85,
+              height: height,
               child: Text(news.title == null || news.title.isEmpty ? "NA" : news.title, style: TextStyle(fontWeight: FontWeight.normal, height:1.4, fontSize: 18, fontFamily: "Kanit", color: Site.cardTxt)),
               //color: Colors.amber,
             ),
-          )
+          ),
+          Container( 
+            padding: EdgeInsets.only(top: 15, left:8, right:15),
+            alignment: Alignment.topRight,
+            width: 140,
+            height: height,
+            //color: Colors.cyan,
+            child: news.image == null || news.image.isEmpty ? null : Image.network(news.image, fit: BoxFit.cover),
+          ),
         ],
         crossAxisAlignment: CrossAxisAlignment.start,
       );
     } else {
+      double height = (news.image == null || news.image.isEmpty ? null : 85);
       newsCard = Row(
         children: <Widget>[
           Container( 
             padding: EdgeInsets.only(top: 15, left:15, right:10, bottom:0),
             alignment: Alignment.topLeft,
             width: 140,
-            height: 85,
+            height: height,
             //color: Colors.cyan,
-            child: news.image == null || news.image.isEmpty ? SizedBox(height: 5,) : Image.network(news.image, fit: BoxFit.cover),
+            child: news.image == null || news.image.isEmpty ? null : Image.network(news.image, fit: BoxFit.cover),
           ),
           Expanded( 
             child: Container( 
               padding: EdgeInsets.only(top: 12, right:12, bottom:0),
               alignment: Alignment.topLeft,
-              height: 85,
+              height: height,
               child: Text(news.title == null || news.title.isEmpty ? "NA" : news.title, style: TextStyle(fontWeight: FontWeight.normal, height:1.4, fontSize: 18, fontFamily: "Kanit", color: Site.cardTxt)),
               //color: Colors.amber,
             ),
