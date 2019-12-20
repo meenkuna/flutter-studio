@@ -113,31 +113,22 @@ class MyHomePageState extends State<MyPageLast> with AutomaticKeepAliveClientMix
       backgroundColor: Colors.transparent,
       body: Container(
         color: Colors.transparent,
-        /*  
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFFFFFFF),Color(0xFFF0F0F0),]
-          )
-        ), 
-        */
         child: SmartRefresher(        
           enablePullDown: true,
           enablePullUp: true,
           header: WaterDropHeader(),
           footer: CustomFooter(
-            builder: (BuildContext context,LoadStatus mode){
+            builder: (BuildContext context,LoadStatus mode) {
               Widget body ;
-              if(mode==LoadStatus.idle){
+              if(mode==LoadStatus.idle) {
                 body =  Text("pull up load");
-              } else if(mode==LoadStatus.loading){
+              } else if(mode==LoadStatus.loading) {
                 body =  CupertinoActivityIndicator();
-              } else if(mode == LoadStatus.failed){
+              } else if(mode == LoadStatus.failed) {
                 body = Text("Load Failed!Click retry!");
-              } else if(mode == LoadStatus.canLoading){
+              } else if(mode == LoadStatus.canLoading) {
                   body = Text("release to load more");
-              } else{
+              } else {
                 body = Text("No more Data");
               }
               return Container(
@@ -226,6 +217,29 @@ class MyHomePageState extends State<MyPageLast> with AutomaticKeepAliveClientMix
           ),
         ],
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+      );
+    } else if(Site.cardType == 'right1') {
+      newsCard = Row(
+        children: <Widget>[
+          Container( 
+            padding: EdgeInsets.only(top: 15, left:15, right:10, bottom:0),
+            alignment: Alignment.topRight,
+            width: 140,
+            height: 85,
+            //color: Colors.cyan,
+            child: news.image == null || news.image.isEmpty ? SizedBox(height: 5,) : Image.network(news.image, fit: BoxFit.cover),
+          ),
+          Expanded( 
+            child: Container( 
+              padding: EdgeInsets.only(top: 12, right:12, bottom:0),
+              alignment: Alignment.topRight,
+              height: 85,
+              child: Text(news.title == null || news.title.isEmpty ? "NA" : news.title, style: TextStyle(fontWeight: FontWeight.normal, height:1.4, fontSize: 18, fontFamily: "Kanit", color: Site.cardTxt)),
+              //color: Colors.amber,
+            ),
+          )
+        ],
         crossAxisAlignment: CrossAxisAlignment.start,
       );
     } else {
